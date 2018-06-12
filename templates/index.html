@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <!-- autorefresh for development -->
+    <!-- <meta http-equiv="refresh" content="3" > -->
+
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta charset="utf-8">
+    <!-- Description, Keywords and Author -->
+    <meta name="description" content="Latest news on Mars scraper project for GW Data Analytics Bootcamp">
+    <meta name="author" content="Yegor Kryukov">
+    <title>:: Latest news on Mars ::</title>
+    <!-- <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon"> -->
+    <!-- style -->
+    <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/style.css') }}">
+    <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/bootstrap.min.css') }}">
+    <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/responsive.css') }}">
+    <!-- font-awesome -->
+    <link rel= "stylesheet" type= "text/css" href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/effects/set2.css') }}">
+    <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/effects/normalize.css') }}">
+    <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/effects/component.css') }}">
+
+   
+
+</head>
+
+<body>
+
+    <!-- header -->
+    <header role="header">
+            <div class="container">
+                <!-- logo -->
+                    <h1>
+                        <a href="/" title="MindThatData"><p>mars.mindthatdata.com</p></a>
+                    </h1>
+                <!-- logo -->
+
+                <!-- nav -->
+                <nav role="header-nav" class="navy">
+                    <ul>
+                        <li class="nav-active"><a href="/scrape" title="Work">Scrape</a></li>
+                        <li class="nav-item list-inline-item">
+                            <a href="https://twitter.com/MindThatData" target="_blank">
+                                <i class="fa fa-twitter-square"></i>
+                            </a>
+                        </li>
+                        <li class="nav-item list-inline-item">
+                            <a href="https://github.com/yegorkryukov" target="_blank">
+                                <i class="fa fa-github"></i>
+                            </a>
+                        </li>
+                        <li class="nav-item list-inline-item">
+                            <a href="https://www.linkedin.com/in/ykryukov/" target="_blank">
+                                <i class="fa fa-linkedin"></i>
+                            </a>
+                        </li>
+                        <li class="nav-item list-inline-item">
+                            <a href="mailto:y@mindthatdata.com?subject=from mars.MTD:" target="_blank">
+                                <i class="fa fa-envelope-o"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+                <!-- nav -->
+            </div>
+        </header>
+    <!-- header -->
+
+    <!-- main -->
+    <main role="main-home-wrapper" class="container">
+        <div class="row">
+
+            <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6 ">
+                <article role="pge-title-content">
+                    <header>
+                        <h2><span>Mars</span> Get the latest</h2>
+                    </header>
+                    <p><a class="btn btn-primary btn-lg" href="/scrape" role="button">Update<i class="hide fas fa-spinner"></i></a> 
+                       
+                        <!-- rerender flag tells if the page is reloaded after the scraping and we show the text  -->
+                        <span class="{{'d-inline-block text-muted small vertical-align' if rerender else 'hide'}}" style="vertical-align: middle">Finished!</span>
+                    </p>
+                </article>
+            </div>   
+            
+            <section class="col-xs-12 col-sm-6 col-md-6 col-lg-6 grid">
+                <figure class="effect-oscar">
+                    <img src="{{data.featured_image_url}}" alt="" class="img-responsive"/>
+                    <figcaption>
+                        <h2>Featured<span> Image</span></h2>
+                        <p>from jpl.nasa.gov</p>
+                        <p>click for full size</p>
+                        <a href="{{data.featured_image_url}}" target="_blank">full size</a>
+                    </figcaption>
+                </figure>
+            </section>
+        </div>
+    
+        <!-- <div class="clearfix"></div> -->
+
+        <div class="row">
+            <section class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+                <article class="about-content">
+                    <h2>Mars<span>Facts</span></h2>
+                    <!-- 'safe' flag tells jinja template engine to trust html and render -->
+                    {{table | safe}}
+                </article>
+            </section>
+
+            <section class="col-xs-12 col-sm-6 col-md-6 col-lg-6 grid">
+                <ul class="grid-lod effect-2" id="grid">
+                    <li>
+                        <!-- <article class="about-content"> -->
+                            <h2>News</h2>
+                            <div class="card">
+                                <div class="card-body">
+                                    <h4 class="card-title">{{data.news_title }}</h4>
+                                    <h6 class="card-subtitle mb-2 text-muted">{{data.news_date}}</h6>
+                                    <p class="card-text">{{data.news_p}}</p>
+                                </div>
+                            </div>
+                        <!-- </article> -->
+                    </li>
+                    <li>
+                        <!-- <article class="about-content"> -->
+                            <div class="card">
+                                <div class="card-body">
+                                    <h4 class="card-title">Current weather on Mars</h4>
+                                    <p class="card-text">{{data.mars_weather}}</p>
+                                </div>
+                            </div>
+                        <!-- </article> -->
+                    </li>
+                </ul>
+            </section>
+
+            <div class="clearfix"></div>
+
+        </div>
+
+        <div class="row">
+            <h1>Mars Hemispheres</h1>
+            {% for image in data.hemisphere_image_urls %}
+            <section class="col-xs-12 col-sm-6 col-md-6 col-lg-6 grid">
+                <figure class="effect-oscar">
+                    <img src="{{image.img_url_jpeg}}" alt="" class="img-responsive"/>
+                    <figcaption>
+                        <h2><span>{{image.title}}</span></h2>
+                        <p>from astrogeology.usgs.gov</p>
+                        <p>click for full size</p>
+                        <a href="{{image.img_url}}" target="_blank">full size</a>
+                    </figcaption>
+                </figure>
+            </section>
+            {% endfor %}
+        </div>
+    </main>
+
+    <!-- main -->
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    
+    <!-- custom -->
+    <!-- <script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script> -->
+    <!-- <script src="static/js/jQuery.js"></script> -->
+    <script src="static/js/nav.js" type="text/javascript"></script>
+    <script src="static/js/custom.js" type="text/javascript"></script>
+
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+  
+    <script src="static/js/bootstrap.min.js" type="text/javascript"></script>
+    <script src="static/js/effects/masonry.pkgd.min.js"  type="text/javascript"></script>
+    <script src="static/js/effects/imagesloaded.js"  type="text/javascript"></script>
+    <script src="static/js/effects/classie.js"  type="text/javascript"></script>
+    <script src="static/js/effects/AnimOnScroll.js"  type="text/javascript"></script>
+    <script src="static/js/effects/modernizr.custom.js"></script>
+
+    <!-- jquery.countdown -->
+    <script src="static/js/html5shiv.js" type="text/javascript"></script>
+
+</body>
+
+</html>
