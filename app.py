@@ -1,28 +1,50 @@
-from flask import Flask, render_template, redirect
-from datetime import datetime
-# import pymongo
-import os
+from flask import Flask, render_template, jsonify
+from sqlalchemy.ext.automap import automap_base
+from sqlalchemy.orm import Session
+from sqlalchemy import create_engine, func
 
-# Initialize PyMongo to work with MongoDBs
-# MONGODB_URI = os.environ.get('MONGODB_URI')
-# client = pymongo.MongoClient(MONGODB_URI)
+# Database Setup
+engine = create_engine("sqlite:///static/data/belly_button_biodiversity.sqlite")
 
-# Define database and collection
-# db = client.get_default_database()
-# collection = db.mars_scrape
+# reflect an existing database into a new model
+Base = automap_base()
+
+# reflect the tables
+Base.prepare(engine, reflect=True)
+
+# Save reference to the table
+OTU = Base.classes.otu
+Samples = Base.classes.samples
+Samples_metadata = Base.classes.samples_metadata
+
+# Create our session (link) from Python to the DB
+session = Session(engine)
 
 # initialize Flask app
 app = Flask(__name__)
 
 @app.route('/')
-def index(rerender=False):
-    # data = collection.find_one()
-    #extract table html from string
-    # table = data['facts_table']
-    #replace class and other style params to pickup bootstrap
-    # table = table.replace('dataframe','table').replace('style="text-align: right;','style="text-align: center;')
-    #print(type(data.facts_table))
-    return render_template("index.html", data=data, table=table, rerender=rerender)
+def index():
+    return render_template("index.html")
+
+@app.route('/names')
+def names():
+    """
+    List of sample names.
+
+    Returns a list of sample names in the format
+    [
+        "BB_940",
+        "BB_941",
+        "BB_943",
+        "BB_944",
+        "BB_945",
+        "BB_946",
+        "BB_947",
+        ...
+    ]
+    """
+    return render_template('names.html')
 
 if __name__ == '__main__':
     app.run(debug=True, use_reloader=True)
