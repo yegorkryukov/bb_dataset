@@ -84,9 +84,16 @@ def meta(sample):
     """
     params = ['AGE','BBTYPE','ETHNICITY','GENDER','LOCATION','SAMPLEID']
     res = {}
-    for p in params:
-        res[p] = session.query(SM.__table__.c[p]).filter(SM.SAMPLEID==sample[3:]).all()[0][0]
+    try:
+        for p in params:
+            res[p] = session.query(SM.__table__.c[p])\
+                                   .filter(SM.SAMPLEID==sample[3:])\
+                                   .all()[0][0]
+    except Exception as e:
+        res['Exception'] = e.__doc__
+   
     return jsonify(res)
+    
 
 @app.route('/wfreq/<sample>')
 def wfreq(sample):
@@ -96,9 +103,44 @@ def wfreq(sample):
 
     Returns an integer value for the weekly washing frequency `WFREQ`
     """
-    return jsonify(session.query(SM.WFREQ)\
+    res = {}
+    try:
+        res = session.query(SM.WFREQ)\
                    .filter(SM.SAMPLEID==sample[3:])\
-                   .all()[0][0])
+                   .all()[0][0]
+    except Exception as e:
+        res['Exception'] = e.__doc__
+        
+    return jsonify(res)
+
+@app.route('/samples/<sample>')
+def samples(sample):
+    """OTU IDs and Sample Values for a given sample.
+
+    Sort your Pandas DataFrame (OTU ID and Sample Value)
+    in Descending Order by Sample Value
+
+    Return a list of dictionaries containing sorted lists  for `otu_ids`
+    and `sample_values`
+
+    [
+        {
+            otu_ids: [
+                1166,
+                2858,
+                481,
+                ...
+            ],
+            sample_values: [
+                163,
+                126,
+                113,
+                ...
+            ]
+        }
+    ]
+    """
+    return
 
 if __name__ == '__main__':
     app.run(debug=True, use_reloader=True)
