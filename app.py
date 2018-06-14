@@ -88,5 +88,17 @@ def meta(sample):
         res[p] = session.query(SM.__table__.c[p]).filter(SM.SAMPLEID==sample[3:]).all()[0][0]
     return jsonify(res)
 
+@app.route('/wfreq/<sample>')
+def wfreq(sample):
+    """Weekly Washing Frequency as a number.
+
+    Args: Sample in the format: `BB_940`
+
+    Returns an integer value for the weekly washing frequency `WFREQ`
+    """
+    return jsonify(session.query(SM.WFREQ)\
+                   .filter(SM.SAMPLEID==sample[3:])\
+                   .all()[0][0])
+
 if __name__ == '__main__':
     app.run(debug=True, use_reloader=True)
