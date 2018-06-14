@@ -16,7 +16,7 @@ Base.prepare(engine, reflect=True)
 # Save reference to the table
 OTU = Base.classes.otu
 Samples = Base.classes.samples
-Samples_metadata = Base.classes.samples_metadata
+SM = Base.classes.samples_metadata
 
 # Create our session (link) from Python to the DB
 session = Session(engine)
@@ -45,9 +45,7 @@ def names():
         ...
     ]
     """
-    names_of_samples = json.dumps([c.key for c in Samples.__table__.c][1:])
-
-    return render_template('names.html',names_of_samples=names_of_samples)
+    return jsonify([c.key for c in Samples.__table__.c][1:])
 
 @app.route('/otu')
 def otu():
@@ -64,8 +62,31 @@ def otu():
         ...
     ]
     """
-    otu_descriptions = json.dumps(session.query(OTU.lowest_taxonomic_unit_found).distinct().all())
-    return render_template('otu.html',otu_descriptions=otu_descriptions)
+    return jsonify(session.query(OTU.lowest_taxonomic_unit_found)\
+                   .distinct().all())
+
+@app.route('/metadata/<sample>')
+def meta(sample):
+    """MetaData for a given sample.
+
+    Args: Sample in the format: `BB_940`
+
+    Returns a json dictionary of sample metadata in the format
+
+    {
+        AGE: 24,
+        BBTYPE: "I",
+        ETHNICITY: "Caucasian",
+        GENDER: "F",
+        LOCATION: "Beaufort/NC",
+        SAMPLEID: 940
+    }
+    """
+    params = ['AGE','BBTYPE','ETHNICITY','GENDER','LOCATION','SAMPLEID']
+    res = {}
+    for p in params:
+        res[p] = session.query(SM.__table__.c[p]).filter(SM.SAMPLEID==sample[3:]).all()[0][0]
+    return jsonify(res)
 
 if __name__ == '__main__':
     app.run(debug=True, use_reloader=True)
