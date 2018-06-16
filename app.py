@@ -5,21 +5,32 @@ from sqlalchemy import create_engine, func
 import json
 
 # Database Setup
-engine = create_engine("sqlite:///static/data/belly_button_biodiversity.sqlite")
+DB_PATH = "sqlite:///static/data/belly_button_biodiversity.sqlite"
 
-# reflect an existing database into a new model
-Base = automap_base()
+def connector(DB_PATH, TABLE):
+    '''
+    Connects to sqlitedb
+    '''
+    engine = create_engine(DB_PATH)
 
-# reflect the tables
-Base.prepare(engine, reflect=True)
+    # reflect an existing database into a new model
+    Base = automap_base()
+
+    # reflect the tables
+    Base.prepare(engine, reflect=True)
+
+    # Create our session (link) from Python to the DB
+    session = Session(engine)
+
+    return Base.classes[TABLE], session
 
 # Save reference to the table
-OTU = Base.classes.otu
-Samples = Base.classes.samples
-SM = Base.classes.samples_metadata
+# OTU = connector(DB_PATH, 'otu')
+# OTU = Base.classes.otu
+# Samples = Base.classes.samples
+# SM = Base.classes.samples_metadata
 
-# Create our session (link) from Python to the DB
-session = Session(engine)
+
 
 # initialize Flask app
 app = Flask(__name__)
@@ -45,6 +56,7 @@ def names():
         ...
     ]
     """
+    Samples, session = connector(DB_PATH, 'samples')
     return jsonify([c.key for c in Samples.__table__.c][1:])
 
 @app.route('/otu')
@@ -62,8 +74,8 @@ def otu():
         ...
     ]
     """
-    return jsonify(session.query(OTU.lowest_taxonomic_unit_found)\
-                   .distinct().all())
+    OTU, session = connector(DB_PATH, 'otu')
+    return jsonify(session.query(OTU.lowest_taxonomic_unit_found).distinct().all())
 
 @app.route('/metadata/<sample>')
 def meta(sample):
@@ -84,6 +96,7 @@ def meta(sample):
     """
     params = ['AGE','BBTYPE','ETHNICITY','GENDER','LOCATION','SAMPLEID']
     res = {}
+    SM, session = connector(DB_PATH, 'samples_metadata')
     try:
         for p in params:
             res[p] = session.query(SM.__table__.c[p])\
@@ -104,6 +117,7 @@ def wfreq(sample):
     Returns an integer value for the weekly washing frequency `WFREQ`
     """
     res = {}
+    SM, session = connector(DB_PATH, 'samples_metadata')
     try:
         res = session.query(SM.WFREQ)\
                    .filter(SM.SAMPLEID==sample[3:])\
