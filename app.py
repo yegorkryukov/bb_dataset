@@ -119,23 +119,22 @@ def wfreq(sample):
     res = {}
     SM, session = connector(DB_PATH, 'samples_metadata')
     try:
-        res = session.query(SM.WFREQ)\
-                   .filter(SM.SAMPLEID==sample[3:])\
-                   .all()[0][0]
+        return jsonify(
+            session.query(SM.WFREQ)\
+                .filter(SM.SAMPLEID==sample[3:])\
+                .all()[0][0]
+        ) 
+
     except Exception as e:
-        res['Exception'] = e.__doc__
-        
-    return jsonify(res)
+        return jsonify({'Exception':e.__doc__})
+    
 
 @app.route('/samples/<sample>')
 def samples(sample):
     """OTU IDs and Sample Values for a given sample.
 
-    Sort your Pandas DataFrame (OTU ID and Sample Value)
-    in Descending Order by Sample Value
-
-    Return a list of dictionaries containing sorted lists  for `otu_ids`
-    and `sample_values`
+    Returns a list of dictionaries containing sorted lists  for `otu_ids`
+    and `sample_values` by Sample Value.
 
     [
         {
@@ -154,7 +153,24 @@ def samples(sample):
         }
     ]
     """
-    return
+    
+    Samples, session = connector(DB_PATH, 'samples')
+
+    # same as
+    # select samples.otu_id o, samples.BB_1233 s from samples order by s desc;
+
+    try:
+        res = session.query(
+                Samples.otu_id, getattr(Samples, sample))\
+                .order_by(getattr(Samples, sample).desc()\
+            )
+        return jsonify([
+            {'otu_ids':[r[0] for r in res]},
+            {'sample_values': [r[1] for r in res]}
+        ])
+    except Exception as e:
+        return jsonify({'Exception':e.__doc__})
+    
 
 if __name__ == '__main__':
     app.run(debug=True, use_reloader=True)
