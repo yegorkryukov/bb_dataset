@@ -2,7 +2,6 @@ from flask import Flask, render_template, jsonify
 from sqlalchemy.ext.automap import automap_base
 from sqlalchemy.orm import Session
 from sqlalchemy import create_engine, func
-import json
 
 # Database Setup
 DB_PATH = "sqlite:///static/data/belly_button_biodiversity.sqlite"
@@ -156,10 +155,11 @@ def samples(sample):
     
     Samples, session = connector(DB_PATH, 'samples')
 
-    # same as
-    # select samples.otu_id o, samples.BB_1233 s from samples order by s desc;
+    
 
     try:
+        # the query below is the same as
+        # select samples.otu_id o, samples.BB_1233 s from samples order by s desc;
         res = session.query(
                 Samples.otu_id, getattr(Samples, sample))\
                 .order_by(getattr(Samples, sample).desc()\
