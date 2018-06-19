@@ -1,15 +1,14 @@
+console.log('blblbl')
+
 // Getting reference to selector
-var $dataSelector = document.getElementById("#selDataseto");
+var $dataSelector = document.getElementById("selDataset");
 
-
-// initiate the dropdown button
-Plotly.d3.json('/names', function(error, names){
-  if (error) throw error;
-  for (var i = 0; i < names.length; i++){
-      d3.select("#dataselect").append("option").attr("value",`${names[i]}`).text(`${names[i]}`)
-  }
+// Obtain sample names and assign to dropdown
+$.getJSON('/names', function(data) {
+    for (var i=0; i<data.length; i++){
+        option = document.createElement('option');
+        option.innerHTML = data[i];
+        $dataSelector.appendChild(option);
+    };
 });
 
-function renderSelector(){
-  
-};
