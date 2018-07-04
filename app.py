@@ -120,7 +120,7 @@ def wfreq(sample):
 
     Returns an integer value for the weekly washing frequency `WFREQ`
     """
-    res = {}
+    # res = {}
     SM, session = connector(DB_PATH, 'samples_metadata')
     try:
         return jsonify(
@@ -170,8 +170,8 @@ def samples(sample):
                 .order_by(getattr(Samples, sample).desc()\
             )
         return jsonify([
-            {'otu_ids':[r[0] for r in res]},
-            {'sample_values': [r[1] for r in res]}
+            {'otu_ids':[r[0] for r in res],
+            'sample_values': [r[1] for r in res]}
         ])
     except Exception as e:
         return jsonify({'Exception':e.__doc__})
