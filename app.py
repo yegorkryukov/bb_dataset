@@ -74,7 +74,12 @@ def otu():
     ]
     """
     OTU, session = connector(DB_PATH, 'otu')
-    return jsonify(session.query(OTU.lowest_taxonomic_unit_found).distinct().all())
+    return jsonify(
+            [
+                str(r[0]) for r in 
+                session.query(OTU.lowest_taxonomic_unit_found).all()
+            ]
+        )
 
 @app.route('/metadata/<sample>')
 def meta(sample):
