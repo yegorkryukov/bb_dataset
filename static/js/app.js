@@ -47,18 +47,20 @@ function optionChanged(sample){
         if (error) return console.warn(error);
         // assign 10 values from API to lists
         // the API call return is sorted already
-        var values = response[0].sample_values.slice(0,10);
-        var otuIDs = response[0].otu_ids.slice(0,10);
+        var sampleValues = response[0].sample_values;
+        var values = sampleValues.slice(0,10);
+        var otuIDs = response[0].otu_ids;
+        var labels = otuIDs.slice(0,10);
         
         Plotly.d3.json(`/otu`, function(error, otuDescriptions) {
             if (error) return console.warn(error);
             var otuHoverItems = [];
             // loop through otu values to populate appropriate descriptions
-            otuIDs.forEach(function(otu){
-                otuHoverItems.push(otuDescriptions[otu]);
+            labels.forEach(function(label){
+                otuHoverItems.push(otuDescriptions[label]);
             });
 
-            var data = [{
+            var trace1 = [{
                 title: `OTU Values Frequency for sample ${sample}`,
                 values: values,
                 labels: otuIDs,
@@ -71,10 +73,20 @@ function optionChanged(sample){
                 width: 500
             };
 
-            Plotly.newPlot('pie', data, layout);
+            Plotly.newPlot('pie', trace1, layout);
 
-            console.log(otuHoverItems);
-            console.log(values, otuIDs);
+            var trace2 = [{
+                x: otuIDs,
+                y: sampleValues,
+                marker: {
+                    size: sampleValues,
+                    color: otuIDs,
+                    hovertext: otuDescriptions
+                },
+                mode: 'markers'
+            }];
+
+            Plotly.newPlot('bubble', trace2, layout);
         });
     })
     
