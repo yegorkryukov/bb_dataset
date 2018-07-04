@@ -1,34 +1,32 @@
-console.log('blblbl')
-
 // Getting reference to selector
 var $dataSelector = document.getElementById("selDataset");
 
+// Adding event listener before populating data from json
+// so the same function optionChanged renders on both page
+// load and option change
+$dataSelector.addEventListener("select", function() {
+    optionChanged(this.value);
+  });
+
 // Obtain sample names from '/names' rounte and assign to dropdown
 $.getJSON('/names', function(data) {
-    console.log(data);
+    // console.log(data);
     for (var i=0; i<data.length; i++){
         option = document.createElement('option');
         option.innerHTML = data[i];
         $dataSelector.appendChild(option);
     };
+
+    // select first option when page loaded
+    $dataSelector.selectedIndex = 0;
+
+    // fire 'select' event to trigger optionChanged function
+    $dataSelector.dispatchEvent(new Event('select'));
 });
-
-$dataSelector.addEventListener("select", function() {
-    optionChanged(this.value);
-  });
-
-// // Assign the default sample route once the page loads
-// $.getJSON("/metadata/BB_940", function(d) {
-//     var data = d;
-//     console.log(data);
-// });
-
-
 
 // function to change dataset when selector changes
 function optionChanged(sample){
-    var path = `/metadata/${sample}`;
-    $.getJSON(path, function(d) {
+    $.getJSON(`/metadata/${sample}`, function(d) {
         // get the ul element
         var $sample = document.getElementById("sample");
 
@@ -43,16 +41,47 @@ function optionChanged(sample){
             $sample.appendChild(li);
         });
     });
+
+    // Create the pie chart
+    Plotly.d3.json(`/samples/${sample}`, function(error, response) {
+        if (error) return console.warn(error);
+        // assign 10 values from API to lists
+        // the API call return is sorted already
+        var values = response[0].sample_values.slice(0,10);
+        var otuIDs = response[0].otu_ids.slice(0,10);
+        
+        Plotly.d3.json(`/otu`, function(error, otuDescriptions) {
+            if (error) return console.warn(error);
+            var otuHoverItems = [];
+            // loop through otu values to populate appropriate descriptions
+            otuIDs.forEach(function(otu){
+                otuHoverItems.push(otuDescriptions[otu]);
+            });
+
+            var data = [{
+                title: `OTU Values Frequency for sample ${sample}`,
+                values: values,
+                labels: otuIDs,
+                hovertext: otuHoverItems,
+                type: 'pie'
+            }];
+
+            var layout = {
+                height: 400,
+                width: 500
+            };
+
+            Plotly.newPlot('pie', data, layout);
+
+            console.log(otuHoverItems);
+            console.log(values, otuIDs);
+        });
+    })
     
-    // Plotly.d3.json(path, function(error, response) {
+
+    // Plotly.d3.json(`/samples/${sample}`, function(error, response) {
     //     if (error) return console.warn(error);
-    //     var data = response;
-    //     console.log(data);
-    //     var layout = {
-    //         height: 400,
-    //         width: 500
-    //       };
-    //     console.log(data);
-    //     Plotly.plot("pie", data, layout)
+    //     values = response[0].sample_values.slice(0,10);
+    //     console.log(values);
     // })
 }
