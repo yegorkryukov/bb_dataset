@@ -10,68 +10,83 @@
 </head>
 
 <body>
-    <div class="container jumbotron">
-        <h1>Dashboards</h1>
+    <div class="container-fluid mx-auto">
+        <h1>Belly Button Biodiversity Dashboard</h1>
     </div>
 
-    <div class="container">
-        <div class="row">
-            <div class="col list-group container mx-auto">
-                <h5 class="mb-1">List of APIs</h5>
-                <a href="/names" class="list-group-item list-group-item-action">
-                    /names
-                </a>
-                <a href="/otu" class="list-group-item list-group-item-action">
-                    /otu
-                </a>
-                <a href="/metadata/BB_940" class="list-group-item list-group-item-action">
-                    /metadata/BB_940
-                    <small class="text-muted">
-                        (replace 'BB_940' with desired sample id)
-                    </small>
-                </a>
-                <a href="/wfreq/BB_940" class="list-group-item list-group-item-action">
-                    /wfreq/BB_940
-                    <small class="text-muted">
-                        (replace 'BB_940' with desired sample id)
-                    </small>
-                </a>
-                <a href="/samples/BB_940" class="list-group-item list-group-item-action">
-                    /samples/BB_940
-                    <small class="text-muted">
-                        (replace 'BB_940' with desired sample id)
-                    </small>
-                </a>
+    <div class="container-fluid">
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-sm-12 col-md-3 col-lg-3">
+                        <div class="card">
+                            <div class="card-body">
+                                <form>
+                                    <div class="col container form-group">
+                                        <label>SELECT Sample:</label>
+                                        <select class="form-control" id="selDataset" onchange="optionChanged(this.value)"></select>
+                                    </div>
+                                    <div class="col mx-auto">
+                                        <ul id="sample" class="list-group"></ul>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-6 col-lg-6">
+                        <div class="card">
+                            <div class="card-body">
+                                <div id="bubble"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-3 col-lg-3">
+                        <div class="card">
+                            <div class="card-body">
+                                <div id="pie"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
-    <div class="container pt=5">
-        <div class="row">
-            <form>
-                <div class="col container form-group">
-                    <label>SELECT Sample:</label>
-                    <select class="form-control" id="selDataset" onchange="optionChanged(this.value)"></select>
-                </div>
-                <div class="col mx-auto">
-                    <ul id="sample" class="list-group">
 
-                    </ul>
-                </div>
-            </form>
-        </div>
-    </div>
+
 
     <div class="container">
-        <div class="row">
-            <div class="col" id="pie">
-            </div>
-        </div>
-    </div>
-
-    <div class="container">
-        <div class="row">
-            <div class="col" id="bubble">
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col list-group container mx-auto">
+                        <h5 class="mb-1">List of APIs</h5>
+                        <a href="/names" class="list-group-item list-group-item-action">
+                            /names
+                        </a>
+                        <a href="/otu" class="list-group-item list-group-item-action">
+                            /otu
+                        </a>
+                        <a href="/metadata/BB_940" class="list-group-item list-group-item-action">
+                            /metadata/BB_940
+                            <small class="text-muted">
+                                (replace 'BB_940' with desired sample id)
+                            </small>
+                        </a>
+                        <a href="/wfreq/BB_940" class="list-group-item list-group-item-action">
+                            /wfreq/BB_940
+                            <small class="text-muted">
+                                (replace 'BB_940' with desired sample id)
+                            </small>
+                        </a>
+                        <a href="/samples/BB_940" class="list-group-item list-group-item-action">
+                            /samples/BB_940
+                            <small class="text-muted">
+                                (replace 'BB_940' with desired sample id)
+                            </small>
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

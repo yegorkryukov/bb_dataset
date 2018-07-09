@@ -42,25 +42,30 @@ function optionChanged(sample){
         });
     });
 
-    // Create the pie chart
+    // Create the charts
     Plotly.d3.json(`/samples/${sample}`, function(error, response) {
         if (error) return console.warn(error);
-        // assign 10 values from API to lists
-        // the API call return is sorted already
+
+        //assign whole lists from API response to variables
         var sampleValues = response[0].sample_values;
-        var values = sampleValues.slice(0,10);
         var otuIDs = response[0].otu_ids;
+
+        // assign 10 values from API
+        // the API call return is sorted already
+        var values = sampleValues.slice(0,10);
         var labels = otuIDs.slice(0,10);
         
         Plotly.d3.json(`/otu`, function(error, otuDescriptions) {
             if (error) return console.warn(error);
+
+
             var otuHoverItems = [];
             // loop through otu values to populate appropriate descriptions
             labels.forEach(function(label){
                 otuHoverItems.push(otuDescriptions[label]);
             });
 
-            var trace1 = [{
+            var tracePie = [{
                 title: `OTU Values Frequency for sample ${sample}`,
                 values: values,
                 labels: otuIDs,
@@ -68,32 +73,73 @@ function optionChanged(sample){
                 type: 'pie'
             }];
 
-            var layout = {
-                height: 400,
-                width: 500
+            var layoutPie = {
+                title: 'Top 10 samples',
+                margin: {
+                    l: 0,
+                    r: 0,
+                    b: 0,
+                    t: 40,
+                    pad: 4
+                  },
+                hovermode: 'closest',
+                showlegend: true
             };
 
-            Plotly.newPlot('pie', trace1, layout);
-
-            var trace2 = [{
+            var traceBubble = [{
                 x: otuIDs,
                 y: sampleValues,
+                text: otuDescriptions,
+                mode: 'markers',
                 marker: {
                     size: sampleValues,
-                    color: otuIDs,
-                    hovertext: otuDescriptions
-                },
-                mode: 'markers'
+                    color: otuIDs
+                }
             }];
 
-            Plotly.newPlot('bubble', trace2, layout);
+            var layoutBubble = {
+                title: 'Sample Value vs the OTU ID',
+                margin: {
+                    l: 0,
+                    r: 0,
+                    b: 0,
+                    t: 40,
+                    pad: 4
+                  },
+                hovermode: 'closest',
+                showlegend: false
+            };
+
+            var pieElem = Plotly.d3.select('#pie')
+                .style({
+                    width: '99%',
+                    'margin-left': '1%',
+
+                    height: '50vh',
+                    'margin-top': '1vh'
+                });
+            
+            var pie = pieElem.node();
+            
+            var bubbleElem = Plotly.d3.select('#bubble')
+                .style({
+                    width: '99%',
+                    'margin-left': '1%',
+
+                    height: '50vh',
+                    'margin-top': '1vh'
+                });
+            
+            var bubble = bubbleElem.node();
+
+            Plotly.newPlot(pie, tracePie, layoutPie);
+            Plotly.newPlot(bubble, traceBubble, layoutBubble);
+            
+            window.onresize = function() {
+                Plotly.Plots.resize(bubbleDiv);
+                Plotly.Plots.resize(pieDiv);
+            };
         });
     })
-    
+};
 
-    // Plotly.d3.json(`/samples/${sample}`, function(error, response) {
-    //     if (error) return console.warn(error);
-    //     values = response[0].sample_values.slice(0,10);
-    //     console.log(values);
-    // })
-}
